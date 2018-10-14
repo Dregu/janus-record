@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ -z "$1" ] || [ ! -z "$2" ]; then
+        echo Usage: ./record \<basename\|stop\>
+        exit
+fi
 SECRET=secret
 ID=1
 PATH=/home/dregu/record/

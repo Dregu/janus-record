@@ -1,14 +1,22 @@
 #!/bin/bash
-if [ -z "$1" ]; then
+if [ -z "$1" ] || [ ! -z "$2" ]; then
 	echo Usage: ./mux \<basename\>
 	exit
 fi
 PP=/opt/janus/bin/janus-pp-rec
 FFMPEG=/usr/bin/ffmpeg
 RM=/bin/rm
-AUDIO=${1}-audio.mjr
-VIDEO=${1}-video.mjr
-$PP $AUDIO ${1}-audio.opus
-$PP $VIDEO ${1}-video.mp4
+AUDIOSIZE=$(wc -c <${1}-audio.mjr)
+VIDEOSIZE=$(wc -c <${1}-video.mjr)
+$PP ${1}-audio.mjr ${1}-audio.opus
+if [ -f "${1}-audio.opus" ] || [ $AUDIOSIZE -lt 100 ]; then
+	$RM ${1}-audio.mjr
+fi
+$PP ${1}-video.mjr ${1}-video.mp4
+if [ -f "${1}-video.mp4" ] || [ $VIDEOSIZE -lt 100 ]; then
+	$RM ${1}-video.mjr
+fi
 $FFMPEG -i ${1}-video.mp4 -i ${1}-audio.opus -c:v copy -c:a aac -strict experimental ${1}.mp4
-$RM -f ${1}-audio.* ${1}-video.*
+if [ "$?" = "0" ] && [ -f "${1}.mp4" ]; then
+	$RM -f ${1}-{audio,video}.{opus,mp4}
+fi
