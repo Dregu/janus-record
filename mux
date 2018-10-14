@@ -16,7 +16,7 @@ $PP ${1}-video.mjr ${1}-video.mp4
 if [ -f "${1}-video.mp4" ] || [ $VIDEOSIZE -lt 100 ]; then
 	$RM ${1}-video.mjr
 fi
-$FFMPEG -i ${1}-video.mp4 -i ${1}-audio.opus -c:v copy -c:a aac -strict experimental ${1}.mp4
-if [ "$?" = "0" ] && [ -f "${1}.mp4" ]; then
+$FFMPEG -i ${1}-video.mp4 -i ${1}-audio.opus -c:v copy -c:a copy ${1}.mkv
+if [ "$?" = "0" ] && [ -f "${1}.mkv" ]; then
 	$RM -f ${1}-{audio,video}.{opus,mp4}
 fi

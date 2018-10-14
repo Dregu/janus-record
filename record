@@ -3,7 +3,7 @@ if [ -z "$1" ] || [ ! -z "$2" ]; then
         echo Usage: ./record \<basename\|stop\>
         exit
 fi
-SECRET=secret
+SECRET=karigrandi
 ID=1
 PATH=/home/dregu/record/
 CURL="/usr/bin/curl -s"
