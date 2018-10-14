@@ -1,0 +1,20 @@
+#!/bin/bash
+SECRET=secret
+ID=1
+PATH=/home/dregu/record/
+CURL="/usr/bin/curl -s"
+JQ=/usr/bin/jq
+DATE=$(/bin/date +%s)
+if [ "$1" == "stop" ]; then
+	ACTION=stop
+	VIDEO=true
+	AUDIO=true
+else
+	ACTION=start
+	AUDIO="\"${PATH}${1}-audio\""
+	VIDEO="\"${PATH}${1}-video\""
+fi
+SESSION=$($CURL -X "POST" http://localhost:8088/janus/ -d "{\"janus\": \"create\", \"transaction\": \"${DATE}s\"}" -H "Content-type: application/json" | $JQ '.data.id')
+HANDLE=$($CURL -X "POST" http://localhost:8088/janus/$SESSION -d "{\"janus\": \"attach\", \"transaction\": \"${DATE}h\", \"plugin\": \"janus.plugin.streaming\"}" -H "Content-type: application/json" | $JQ '.data.id')
+RESPONSE=$($CURL -X "POST" http://localhost:8088/janus/$SESSION/$HANDLE -d "{\"janus\": \"message\", \"transaction\": \"${DATE}r\", \"body\": {\"request\": \"recording\", \"action\": \"$ACTION\", \"id\": $ID, \"audio\": $AUDIO, \"video\": $VIDEO, \"secret\": \"$SECRET\"}}" -H "Content-type: application/json" | $JQ '.plugindata.data.streaming')
+echo $RESPONSE
